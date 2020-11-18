@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+	<link href="css/mui.min.css" rel="stylesheet"/>
+	<link rel="stylesheet" href="css/aheader.css"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+		
+		mui.plusReady(function () {
+			plus.navigator.setStatusBarStyle("light");
+			plus.navigator.setStatusBarBackground("#C9394A");
+		})
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav title">
+		<h1 class="mui-title title-color" id='chat_title'><b>demo</b></h1>
+	</header>
+	
+		
+	<nav class="mui-bar mui-bar-tab">
+		<a class="mui-tab-item mui-active " tabindex="0">
+			<span class="mui-icon mui-icon mui-icon-chatboxes"></span>
+			<span class="mui-tab-label">信息</span>
+		</a>
+		<a class="mui-tab-item " tabindex="1">
+			<span class="mui-icon mui-icon mui-icon-person"></span>
+			<span class="mui-tab-label">好友</span>
+		</a>
+		<a class="mui-tab-item" tabindex="2">
+			<span class="mui-icon mui-icon mui-icon-weixin"></span>
+			<span class="mui-tab-label">朋友圈</span>
+		</a>
+		<a class="mui-tab-item" tabindex="3">
+			<span class="mui-icon mui-icon mui-icon-contact"></span>
+			<span class="mui-tab-label">我的</span>
+		</a>
+	</nav>
+	<script src="js/mui.js"></script>
+	<script type="text/javascript">
+		
+		var chatArray = [
+			{
+				paraId:"chatlist.html",
+				paraUrl:"chatlist.html"
+			},
+			{
+				paraId:"telecommunication.html",
+				paraUrl:"telecommunication.html"
+			},
+			{
+				paraId:"friendsCircle.html",
+				paraUrl:"friendsCircle.html"
+			},
+			{
+				paraId:"mine.html",
+				paraUrl:"mine.html"
+			}
+		];
+		
+		var muxinStyle = {
+			top: "60px",
+			height: "70%",
+			
+		}
+		
+		mui.plusReady(function(){
+			
+			//禁止andiord后退键 返回到注册登录页面
+			mui.back = function(){
+				return false;
+			}
+			
+			//对网络事件进行监听
+			netChangeSwitch();
+			
+			
+          //获取当前的webview对象
+          var indexwebview = plus.webview.currentWebview();
+          
+		  //向当前的主页追加子页的4张webview对象
+		  for(var i = 0; i < chatArray.length; i++){
+            var indexview = plus.webview.create(chatArray[i].paraUrl,
+			                                    chatArray[i].paraId,
+												muxinStyle);
+			//隐藏view窗口
+			indexview.hide();
+			indexwebview.append(indexview);
+		  }
+		  
+		  plus.webview.show(chatArray[0].paraId);
+		  
+		  //批量绑定tap事件，展示不同的页面
+		  mui(".mui-bar-tab").on("tap","a",function(){
+			  var tabindex = this.getAttribute("tabindex");
+			  
+			  //显示点击tap出来的页面
+			  plus.webview.show(chatArray[tabindex].paraId,"fade-in",200)
+			  
+			  //隐藏其他几个页面
+			  for(var i = 0; i < chatArray.length; i++){
+				  
+				  if(i != tabindex){
+					  plus.webview.hide(chatArray[i].paraId,"fade-out",200);
+				  }
+			  }
+		  })
+		  
+		  //延迟加载
+		  setTimeout('initData()','1000');
+		});
+		
+		
+		//预加载
+		function initData(){
+			var chatlist = plus.webview.getWebviewById('chatlist.html');
+			mui.fire(chatlist,'refresh');
+			
+			var mine = plus.webview.getWebviewById('mine.html');
+		    mui.fire(mine,'refresh');
+		}
+		
+		//对网络事件监听
+		function netChangeSwitch(){
+			var connectionStatus = plus.networkinfo.getCurrentType();
+			
+			if(connectionStatus != 0 && connectionStatus != 1){
+			   //重新打开网络
+			   var chat_title = document.getElementById('chat_title');
+			   chat_title.innerHTML = '<b>Chat</b>';
+			   
+			}else{
+			   //关闭网络
+			   var chat_title = document.getElementById('chat_title');
+			   chat_title.innerHTML = '<b>Chat(未连接)</b>';
+			}
+		};
+		
+	</script>
+</body>
+</html>

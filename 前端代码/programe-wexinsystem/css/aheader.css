@@ -1,0 +1,14 @@
+*{
+	touch-action: pan-y; 
+}
+.title{
+	background-color: #FF5053;
+}
+
+.title-color{
+	color: white;
+}
+
+.mui-bar-tab .mui-tab-item.mui-active{
+	color: #FF5053;
+}
